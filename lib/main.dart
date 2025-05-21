@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pmsn2025/main_figma.dart';
 import 'package:pmsn2025/screens/dashboard_screen.dart';
 import 'package:pmsn2025/screens/list_students_screen.dart';
 import 'package:pmsn2025/screens/splash_screen.dart';
@@ -20,9 +21,11 @@ class MyApp extends StatelessWidget {
           routes: {
             "/list" : (context) => const ListStudentsScreen(), 
             "/dash" : (context) => const DashboardScreen(), 
-            "/todo" : (context) => const TodoScreen()
+            "/todo" : (context) => const TodoScreen(),
+            "/figma" : (context) => const HomeScreen()
           },      
           title: 'Material App',
+          debugShowCheckedModeBanner: false,
           home: SplashScreen()
         );
       }

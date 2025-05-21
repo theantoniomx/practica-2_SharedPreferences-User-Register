@@ -16,9 +16,9 @@ class DashboardScreen extends StatelessWidget {
             type: Darlights.DarlightFour,
             options: DarlightFourOption(),
             onChange: (value) {
-              if( value == ThemeMode.light ){
+              if (value == ThemeMode.light) {
                 GlobalValues.themeApp.value = ThemeSettings.lightTheme();
-              }else{
+              } else {
                 GlobalValues.themeApp.value = ThemeSettings.darkTheme();
               }
             },
@@ -29,21 +29,20 @@ class DashboardScreen extends StatelessWidget {
         child: ListView(
           children: [
             const UserAccountsDrawerHeader(
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage('https://i.pravatar.cc/300') ,
-              ),
-              accountName: Text('Juan Antonio Parra Nuñez'), 
-              accountEmail: Text('19031079@itcelaya.edu.mx')
-            ),
+                currentAccountPicture: CircleAvatar(
+                  backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
+                ),
+                accountName: Text('Juan Antonio Parra Nuñez'),
+                accountEmail: Text('19031079@itcelaya.edu.mx')),
             ListTile(
-              onTap: (){},
+              onTap: () => Navigator.pushNamed(context, "/figma"),
               leading: Icon(Icons.design_services),
               title: Text('Práctica Figma'),
               subtitle: Text('Frontend App'),
               trailing: Icon(Icons.chevron_right),
             ),
             ListTile(
-              onTap: ()=>Navigator.pushNamed(context,"/todo"),
+              onTap: () => Navigator.pushNamed(context, "/todo"),
               leading: Icon(Icons.task),
               title: Text('Todo App'),
               subtitle: Text('Task List'),
