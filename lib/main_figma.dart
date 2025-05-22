@@ -73,7 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Row(
+          Material(
+              child: Row(
             children: [
               Expanded(
                 child: TextField(
@@ -83,28 +84,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   controller: TextEditingController(),
                   decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 13),
-                    prefix: const IconTheme(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 13,
+                      ),
+                      prefix: const IconTheme(
                         data: IconThemeData(
                           color: grey6,
                         ),
-                        child: Icon(Icons.search)),
-                    hintText: 'Search clothes. . . ',
-                    border: kInputBorder,
-                    errorBorder: kInputBorder,
-                    disabledBorder: kInputBorder,
-                    focusedBorder: kInputBorder,
-                    focusedErrorBorder: kInputBorder,
-                    enabledBorder: kInputBorder,
-                    hintStyle: kEncodeSansRegular.copyWith(
-                      color: grey6,
-                      fontSize: SizeConfig.blockSizeHorizontal! * 3.5,
-                    ),
-                  ),
+                        child: Icon(Icons.search),
+                      ),
+                      hintText: 'Search clothes. . . ',
+                      border: kInputBorder,
+                      errorBorder: kInputBorder,
+                      focusedBorder: kInputBorder,
+                      disabledBorder: kInputBorder,
+                      focusedErrorBorder: kInputBorder,
+                      enabledBorder: kInputBorder,
+                      hintStyle: kEncodeSansRegular.copyWith(
+                        color: grey6,
+                        fontSize: SizeConfig.blockSizeHorizontal! * 3.5,
+                      )),
                 ),
               )
             ],
-          )
+          ))
         ],
       ),
     );
