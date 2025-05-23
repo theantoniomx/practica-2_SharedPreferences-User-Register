@@ -19,7 +19,7 @@ const double borderRadius = 12.0;
 
 const double paddingHorizontal = 24.0;
 
-final kInputBorder = OutlineInputBorder(
+final inputBorder = OutlineInputBorder(
   borderRadius: BorderRadius.circular(borderRadius),
   borderSide: const BorderSide(
     color: grey3,
