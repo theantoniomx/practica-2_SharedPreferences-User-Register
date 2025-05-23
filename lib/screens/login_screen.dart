@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 )),
             Positioned(
-                top: 250,
+                top: 150,
                 child: Lottie.asset("assets/tecnm.json", height: 250)),
             Positioned(
                 bottom: 50,

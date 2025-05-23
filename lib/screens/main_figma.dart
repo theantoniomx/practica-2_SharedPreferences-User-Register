@@ -2,33 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
-import 'package:pmsn2025/app_styles.dart';
-import 'package:pmsn2025/size_config.dart';
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: const HomeScreen(),
-      ),
-    );
-  }
-}
+import 'package:pmsn2025/utils/app_styles.dart';
+import 'package:pmsn2025/screens/product_detail.dart';
+import 'package:pmsn2025/utils/size_config.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -43,6 +22,21 @@ class _HomeScreenState extends State<HomeScreen> {
     'jeans_icon'
   ];
   List<String> images = ['image-01', 'image-02', 'image-03', 'image-04'];
+  List<bool> isFavorite = [false, false, false, false];
+  List<String> titles = [
+    "Modern Light Clothes",
+    "Light Dress Bless",
+  ];
+
+  List<String> subtitles = [
+    "T-Shirt",
+    "Dress modern",
+  ];
+
+  List<String> prices = [
+    "\$212.99",
+    "\$162.99",
+  ];
 
   int current = 0;
   int _currentIndex = 0;
@@ -65,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Regresa a la pantalla anterior
+            Navigator.pop(context);
           },
         ),
       ),
@@ -73,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
+            padding: const EdgeInsets.symmetric(horizontal: paddingHorizontal),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,14 +78,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Hello, Welcome 👋',
-                      style: kEncodeSansRegular.copyWith(
+                      style: encodeSansRegular.copyWith(
                         color: grey4,
                         fontSize: SizeConfig.blockSizeHorizontal! * 3.5,
                       ),
                     ),
                     Text(
                       'Albert Stevano',
-                      style: kEncodeSansBold.copyWith(
+                      style: encodeSansBold.copyWith(
                         color: grey10,
                         fontSize: SizeConfig.blockSizeHorizontal! * 4,
                       ),
@@ -100,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const CircleAvatar(
                   radius: 20,
-                  backgroundColor: kGrey,
+                  backgroundColor: grey4,
                   backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
                 )
               ],
@@ -110,13 +104,13 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: kPaddingHorizontal,
+                horizontal: paddingHorizontal,
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      style: kEncodeSansRegular.copyWith(
+                      style: encodeSansRegular.copyWith(
                         color: grey5,
                         fontSize: SizeConfig.blockSizeHorizontal! * 3.5,
                       ),
@@ -138,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           disabledBorder: kInputBorder,
                           focusedErrorBorder: kInputBorder,
                           enabledBorder: kInputBorder,
-                          hintStyle: kEncodeSansRegular.copyWith(
+                          hintStyle: encodeSansRegular.copyWith(
                             color: grey6,
                             fontSize: SizeConfig.blockSizeHorizontal! * 3.5,
                           )),
@@ -153,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: grey13,
-                      borderRadius: BorderRadius.circular(kBorderRadius),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                     child: SvgPicture.asset('assets/figma/filter_icon.svg'),
                   )
@@ -168,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: double.infinity,
             height: 36,
             child: ListView.builder(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: categories.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
@@ -180,9 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Container(
                     margin: EdgeInsets.only(
-                      left: index == 0 ? kPaddingHorizontal : 15,
+                      left: index == 0 ? paddingHorizontal : 15,
                       right: index == categories.length - 1
-                          ? kPaddingHorizontal
+                          ? paddingHorizontal
                           : 0,
                     ),
                     padding: const EdgeInsets.symmetric(
@@ -211,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Text(
                           categories[index],
-                          style: kEncodeSansMedium.copyWith(
+                          style: encodeSansMedium.copyWith(
                             color: current == index ? white1 : grey13,
                             fontSize: SizeConfig.blockSizeHorizontal! * 3,
                           ),
@@ -234,20 +228,31 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSpacing: 23,
             itemCount: images.length,
             padding: const EdgeInsets.symmetric(
-              horizontal: kPaddingHorizontal,
+              horizontal: paddingHorizontal,
             ),
             itemBuilder: (context, index) {
+              final i = index % titles.length;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Stack(
                     children: [
                       Positioned(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(kBorderRadius),
-                          child: Image.asset(
-                            'assets/figma/images/${images[index]}.png',
-                            fit: BoxFit.cover,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ProductDetail(),
+                              ),
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(borderRadius),
+                            child: Image.asset(
+                              'assets/figma/images/${images[index]}.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
@@ -255,9 +260,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         right: 12,
                         top: 12,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            setState(() {
+                              isFavorite[index] = !isFavorite[index];
+                            });
+                          },
                           child: SvgPicture.asset(
-                              'assets/figma/favorite_cloth_icon_unselected.svg'),
+                            isFavorite[index]
+                                ? 'assets/figma/favorite_cloth_icon_selected.svg'
+                                : 'assets/figma/favorite_cloth_icon_unselected.svg',
+                          ),
                         ),
                       )
                     ],
@@ -266,46 +278,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 8,
                   ),
                   Text(
-                    'Modern Light Clothes',
+                    titles[i],
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: kEncodeSansSemibold.copyWith(
+                    style: encodeSansSemibold.copyWith(
                       color: grey10,
                       fontSize: SizeConfig.blockSizeHorizontal! * 3.5,
                     ),
                   ),
                   Text(
-                    'Dress modern',
+                    subtitles[i],
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: kEncodeSansRegular.copyWith(
+                    style: encodeSansRegular.copyWith(
                       color: grey4,
                       fontSize: SizeConfig.blockSizeHorizontal! * 2.5,
                     ),
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '\$212.99',
-                        style: kEncodeSansSemibold.copyWith(
+                        prices[i],
+                        style: encodeSansSemibold.copyWith(
                           color: grey13,
                           fontSize: SizeConfig.blockSizeHorizontal! * 3.5,
                         ),
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.star, color: kYellow, size: 16),
-                          const SizedBox(
-                            width: 8,
-                          ),
+                          const Icon(Icons.star, color: yellow1, size: 16),
+                          const SizedBox(width: 8),
                           Text(
                             '5.0',
-                            style: kEncodeSansRegular.copyWith(
+                            style: encodeSansRegular.copyWith(
                               color: grey13,
                               fontSize: SizeConfig.blockSizeHorizontal! * 3,
                             ),
@@ -328,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
           isFloating: true,
           borderRadius: const Radius.circular(40),
           selectedColor: white1,
-          unSelectedColor: kGrey,
+          unSelectedColor: grey3,
           backgroundColor: grey13,
           strokeColor: Colors.transparent,
           scaleFactor: 0.1,
