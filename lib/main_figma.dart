@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pmsn2025/app_styles.dart';
 import 'package:pmsn2025/size_config.dart';
 
@@ -159,10 +160,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      categories[index] = categories[index];
+                      current = index;
                     });
                   },
                   child: Container(
+                    margin: EdgeInsets.only(
+                      left: index == 0 ? kPaddingHorizontal : 15,
+                      right: index == categories.length - 1
+                          ? kPaddingHorizontal
+                          : 0,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
                     height: 36,
                     decoration: BoxDecoration(
                       color: current == index ? grey13 : white1,
@@ -186,6 +196,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Text(
                           categories[index],
+                          style: kEncodeSansMedium.copyWith(
+                            color: current == index ? white1 : grey13,
+                            fontSize: SizeConfig.blockSizeHorizontal! * 3,
+                          ),
                         )
                       ],
                     ),
@@ -193,7 +207,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-          )
+          ),
+          const SizedBox(
+            height: 32,
+          ),
+          MasonryGridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            itemCount: images.length,
+            padding: const EdgeInsets.symmetric(
+              horizontal: kPaddingHorizontal,
+            ),
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  Stack(
+                    children: [
+                      Positioned(
+                          child: ClipRRect(
+                        borderRadius: BorderRadius.circular(kBorderRadius),
+                        child: Image.asset(
+                          'assets/figma/images/${images[index]}.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ))
+                    ],
+                  )
+                ],
+              );
+            },
+          ),
         ],
       ),
     );
