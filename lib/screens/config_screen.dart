@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:provider/provider.dart';
 import 'package:pmsn2025/utils/preferences.dart';
 import 'package:pmsn2025/utils/theme_provider.dart';
 import 'package:pmsn2025/utils/user_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ConfigScreen extends StatefulWidget {
   @override
@@ -19,7 +20,16 @@ class _ConfigScreenState extends State<ConfigScreen> {
 
   String _selectedTheme = 'light';
   String _selectedFont = 'Roboto';
-  final List<String> _fonts = ['Roboto', 'Arial', 'Times New Roman'];
+  final List<String> _fonts = [
+    'Roboto',
+    'Times New Roman',
+    'Courier New',
+    'EncodeSans',
+    'Montserrat',
+    'PlaypenSansArabic',
+    'RobotoCondensed',
+    'WDXLLubrifontTC'
+  ];
 
   @override
   void initState() {
@@ -40,7 +50,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
           ? File(userData['avatar']!)
           : null;
       _selectedTheme = theme;
-      _selectedFont = font;
+      _selectedFont = _fonts.contains(font) ? font : 'Roboto';
     });
   }
 
@@ -55,20 +65,119 @@ class _ConfigScreenState extends State<ConfigScreen> {
   }
 
   Future<void> _saveUserChanges() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final avatarPath = _avatar?.path ?? '';
+
+    // Validación de campos individuales
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('El nombre es obligatorio')),
+      );
+      return;
+    } else if (name.length < 4) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('El nombre debe tener al menos 4 caracteres')),
+      );
+      return;
+    }
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('El correo es obligatorio')),
+      );
+      return;
+    }
+
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('El correo no es válido')),
+      );
+      return;
+    }
+
+    if (password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('La contraseña es obligatoria')),
+      );
+      return;
+    } else if (password.length < 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('La contraseña debe tener al menos 5 caracteres')),
+      );
+      return;
+    }
+
+    if (avatarPath.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Debes seleccionar una imagen de perfil')),
+      );
+      return;
+    }
+
+    if (!File(avatarPath).existsSync()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('La imagen seleccionada no existe o no es válida')),
+      );
+      return;
+    }
+
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     await userProvider.updateUser(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      avatar: _avatar?.path ?? '',
+      name: name,
+      email: email,
+      avatar: avatarPath,
     );
     await Preferences.setUserData(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      avatarPath: _avatar?.path ?? '',
-      password: _passwordController.text,
+      name: name,
+      email: email,
+      avatarPath: avatarPath,
+      password: password,
     );
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Datos del usuario actualizados')),
+    );
+  }
+
+  void _pickColor(
+    BuildContext context,
+    Color currentColor,
+    ValueChanged<Color> onColorChanged,
+  ) {
+    Color tempColor = currentColor;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Selecciona un color'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: currentColor,
+              onColorChanged: (color) => tempColor = color,
+              showLabel: true,
+              pickerAreaHeightPercent: 0.8,
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            ElevatedButton(
+              child: Text('Seleccionar'),
+              onPressed: () {
+                onColorChanged(tempColor);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -79,7 +188,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Configuraciones'),
+        backgroundColor: themeProvider.secondaryColor,
       ),
+      backgroundColor: themeProvider.primaryColor,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -115,47 +226,123 @@ class _ConfigScreenState extends State<ConfigScreen> {
             ),
             SizedBox(height: 30),
             _buildSectionTitle('Personalización'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Tema'),
-                DropdownButton<String>(
-                  value: _selectedTheme,
-                  items: ['light', 'dark'].map((theme) {
-                    return DropdownMenuItem(
-                      value: theme,
-                      child: Text(theme == 'light' ? 'Claro' : 'Oscuro'),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      themeProvider.setTheme(value);
-                      setState(() => _selectedTheme = value);
-                    }
-                  },
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Tema visual',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    DropdownButton<String>(
+                      value: _selectedTheme,
+                      isExpanded: true,
+                      items: ['light', 'dark'].map((theme) {
+                        return DropdownMenuItem(
+                          value: theme,
+                          child: Text(theme == 'light' ? 'Claro' : 'Oscuro'),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          final themeProvider = Provider.of<ThemeProvider>(
+                              context,
+                              listen: false);
+                          themeProvider.setTheme(value);
+
+                          if (value == 'light') {
+                            themeProvider.setPrimaryColor(Colors.white);
+                            themeProvider.setSecondaryColor(Colors.blue);
+                          } else {
+                            themeProvider.setPrimaryColor(Colors.grey[850]!);
+                            themeProvider.setSecondaryColor(Colors.deepPurple);
+                          }
+
+                          setState(() => _selectedTheme = value);
+                        }
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    Text('Colores',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.color_lens_outlined),
+                            label: Text('Fondo'),
+                            onPressed: () => _pickColor(
+                              context,
+                              themeProvider.primaryColor,
+                              (color) => themeProvider.setPrimaryColor(color),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.format_color_fill),
+                            label: Text('AppBar'),
+                            onPressed: () => _pickColor(
+                              context,
+                              themeProvider.secondaryColor,
+                              (color) => themeProvider.setSecondaryColor(color),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Fuente'),
-                DropdownButton<String>(
-                  value: _selectedFont,
-                  items: _fonts.map((font) {
-                    return DropdownMenuItem(
-                      value: font,
-                      child: Text(font),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      themeProvider.setFont(value);
-                      setState(() => _selectedFont = value);
-                    }
-                  },
+            SizedBox(height: 20),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Fuente',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    DropdownButton<String>(
+                      value: _selectedFont,
+                      isExpanded: true,
+                      items: _fonts.map((font) {
+                        return DropdownMenuItem<String>(
+                          value: font,
+                          child: Text(
+                            font,
+                            style: TextStyle(fontFamily: font),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          final themeProvider = Provider.of<ThemeProvider>(
+                              context,
+                              listen: false);
+                          themeProvider.setFont(value);
+                          setState(() => _selectedFont = value);
+                        }
+                      },
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),

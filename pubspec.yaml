@@ -96,6 +96,21 @@ flutter:
     - family: SWar
       fonts:
         - asset: fonts/StarJedi-DGRW.ttf
+    - family: EncodeSans
+      fonts:
+        - asset: fonts/EncodeSans.ttf
+    - family: Montserrat
+      fonts:
+        - asset: fonts/Montserrat.ttf
+    - family: PlaypenSansArabic
+      fonts:
+        - asset: fonts/PlaypenSansArabic.ttf
+    - family: RobotoCondensed
+      fonts:
+        - asset: fonts/RobotoCondensed.ttf
+    - family: WDXLLubrifontTC
+      fonts:
+        - asset: fonts/WDXLLubrifontTC.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

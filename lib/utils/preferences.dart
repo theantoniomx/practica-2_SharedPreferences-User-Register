@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 class Preferences {
   static Future<void> setKeepLoggedIn(bool value) async {
@@ -48,4 +49,27 @@ class Preferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('font') ?? 'Roboto';
   }
+
+  static Future<void> setPrimaryColor(Color color) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('primaryColor', color.value);
+  }
+
+  static Future<Color> getPrimaryColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    final colorValue = prefs.getInt('primaryColor');
+    return colorValue != null ? Color(colorValue) : Colors.white;
+  }
+
+  static Future<void> setSecondaryColor(Color color) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('secondaryColor', color.value);
+  }
+
+  static Future<Color> getSecondaryColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    final colorValue = prefs.getInt('secondaryColor');
+    return colorValue != null ? Color(colorValue) : Colors.blue;
+  }
+
 }

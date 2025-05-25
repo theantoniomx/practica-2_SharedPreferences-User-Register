@@ -9,20 +9,30 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Práctica 2 - SharedPreferences')),
+      appBar: AppBar(
+        title: Text('Práctica 2 - SharedPreferences'),
+        backgroundColor: themeProvider.secondaryColor,
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(userProvider.name),
-              accountEmail: Text(userProvider.email),
-              currentAccountPicture: userProvider.avatar.isNotEmpty
-                  ? CircleAvatar(
-                      backgroundImage: FileImage(File(userProvider.avatar)))
-                  : CircleAvatar(child: Icon(Icons.person)),
+            Container(
+              color: themeProvider.secondaryColor,
+              child: UserAccountsDrawerHeader(
+                decoration: BoxDecoration(
+                  color: themeProvider.secondaryColor,
+                ),
+                accountName: Text(userProvider.name),
+                accountEmail: Text(userProvider.email),
+                currentAccountPicture: userProvider.avatar.isNotEmpty
+                    ? CircleAvatar(
+                        backgroundImage: FileImage(File(userProvider.avatar)))
+                    : CircleAvatar(child: Icon(Icons.person)),
+              ),
             ),
             ListTile(
               leading: Icon(Icons.design_services),
@@ -52,7 +62,13 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Center(child: Text('¡Bienvenid@, ${userProvider.name}!')),
+      backgroundColor: themeProvider.primaryColor,
+      body: Center(
+        child: Text(
+          '¡Bienvenid@, ${userProvider.name}!',
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
     );
   }
 }
