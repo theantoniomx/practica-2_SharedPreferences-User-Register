@@ -70,7 +70,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
     final password = _passwordController.text;
     final avatarPath = _avatar?.path ?? '';
 
-    // Validación de campos individuales
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('El nombre es obligatorio')),
@@ -224,7 +223,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
               onPressed: _saveUserChanges,
               child: Text('Guardar datos'),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 15),
+            const Divider(),
+            SizedBox(height: 15),
             _buildSectionTitle('Personalización'),
             Card(
               elevation: 2,
@@ -354,7 +355,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Divider(height: 30),
         Text(
           title,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

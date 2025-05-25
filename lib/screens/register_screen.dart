@@ -28,10 +28,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _register() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_avatar == null || !_avatar!.existsSync()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Debes seleccionar una imagen de perfil válida')),
+      );
+      return;
+    }
+
     await Preferences.setUserData(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      avatarPath: _avatar?.path ?? '',
+      avatarPath: _avatar!.path,
       password: _passwordController.text,
     );
 
@@ -61,6 +69,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: const Text("Tomar foto con cámara"),
         ),
       ],
+    );
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: const OutlineInputBorder(),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red.shade700),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red.shade700),
+      ),
     );
   }
 
@@ -114,35 +135,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _nameController,
-                      decoration:
-                          const InputDecoration(labelText: 'Nombre completo'),
-                      validator: (value) =>
-                          value!.trim().isEmpty ? 'Campo obligatorio' : null,
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                          labelText: 'Correo electrónico'),
+                      decoration: _inputDecoration('Nombre completo'),
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Campo obligatorio';
-                        }
-                        final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                        if (!emailRegex.hasMatch(value.trim())) {
-                          return 'Correo no válido';
-                        }
+                        final trimmed = value?.trim() ?? '';
+                        if (trimmed.isEmpty) return 'El nombre es obligatorio';
+                        if (trimmed.length < 4)
+                          return 'Debe tener al menos 4 caracteres';
                         return null;
                       },
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: _inputDecoration('Correo electrónico'),
+                      validator: (value) {
+                        final trimmed = value?.trim() ?? '';
+                        if (trimmed.isEmpty) return 'El correo es obligatorio';
+                        final emailRegex =
+                            RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                        if (!emailRegex.hasMatch(trimmed))
+                          return 'Correo no válido';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
-                      decoration:
-                          const InputDecoration(labelText: 'Contraseña'),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Campo obligatorio' : null,
+                      decoration: _inputDecoration('Contraseña'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return 'La contraseña es obligatoria';
+                        if (value.length < 5)
+                          return 'Debe tener al menos 5 caracteres';
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
