@@ -1,4 +1,4 @@
-# pmsn2025
+# Práctica 2: SharedPreferences && User Register
 
 A new Flutter project.
 
